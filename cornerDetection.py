@@ -1,0 +1,21 @@
+import cv2
+import numpy
+img = cv2.imread("images/shapes.png",0)
+img = cv2.resize(img, (300,300))
+# cv2.imshow("original", img)
+edges = cv2.Canny(img, 100, 200)
+cv2.imshow("canny", edges)
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
+kernel1 = cv2.getStructuringElement(cv2.MORPH_CROSS, (9,9))
+blackhat = cv2.morphologyEx(edges, cv2.MORPH_BLACKHAT, kernel)
+blackhat1 = cv2.morphologyEx(edges, cv2.MORPH_BLACKHAT, kernel1)
+cv2.imshow("blackhat",blackhat)
+cv2.imshow("blackhat1",blackhat1)
+final = cv2.bitwise_not(blackhat, blackhat, mask=blackhat1)
+kernel45 = cv2.getStructuringElement(cv2.MORPH_RECT, (9,9))
+final = cv2.filter2D(final,-1,kernel45)
+cv2.imshow("final",final)
+contours, hierarchy = cv2.findContours(final, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+cv2.waitKey()
+cv2.destroyAllWindows()
